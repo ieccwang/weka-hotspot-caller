@@ -1,0 +1,60 @@
+
+
+Hot Spot
+========
+Total population: 435 instances
+Target attribute: Class
+Target value: democrat [value count in total population: 267 instances (61.38%)]
+Minimum value count for segments: 88 instances (33% of target value total population)
+Maximum branching factor: 2
+Maximum rule length: unbounded
+Minimum improvement in target: 1%
+
+Class=democrat (61.38% [267/435])
+  physician-fee-freeze = n (99.19% [245/247])
+  crime = n (98.24% [167/170])
+  |   physician-fee-freeze = n (100% [163/163])
+  |   adoption-of-the-budget-resolution = y (100% [158/158])
+
+=== Evaluation ===
+
+Elapsed time: 0.03s
+
+
+
+Hot Spot
+========
+Total population: 435 instances
+Target attribute: Class
+Target value: republican [value count in total population: 168 instances (38.62%)]
+Minimum value count for segments: 55 instances (33% of target value total population)
+Maximum branching factor: 2
+Maximum rule length: unbounded
+Minimum improvement in target: 1%
+
+Class=republican (38.62% [168/435])
+  physician-fee-freeze = y (92.09% [163/177])
+  |   synfuels-corporation-cutback = n (97.83% [135/138])
+  |   |   immigration = y (100% [76/76])
+  |   |   duty-free-exports = n (99.15% [116/117])
+  |   water-project-cost-sharing = n (97.26% [71/73])
+  |   |   synfuels-corporation-cutback = n (98.44% [63/64])
+  |   |   education-spending = y (98.36% [60/61])
+  adoption-of-the-budget-resolution = n (83.04% [142/171])
+  |   physician-fee-freeze = y (95.89% [140/146])
+  |   |   immigration = y (100% [73/73])
+  |   |   synfuels-corporation-cutback = n (99.15% [116/117])
+  |   synfuels-corporation-cutback = n (92.91% [118/127])
+  |   |   mx-missile = n (97.3% [108/111])
+  |   |   |   immigration = y (100% [56/56])
+  |   |   |   physician-fee-freeze = y (99.07% [107/108])
+  |   |   duty-free-exports = n (97.22% [105/108])
+  |   |   |   physician-fee-freeze = y (100% [104/104])
+  |   |   |   mx-missile = n (98.97% [96/97])
+  |   |   |   |   physician-fee-freeze = y (100% [96/96])
+  |   |   |   |   anti-satellite-test-ban = n (100% [89/89])
+
+=== Evaluation ===
+
+Elapsed time: 0.037s
+

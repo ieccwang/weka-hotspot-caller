@@ -1,0 +1,3 @@
+*.arff
+*.csv
+!vote.arff

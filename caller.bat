@@ -1,0 +1,1 @@
+java -cp "D:\Program Files\Weka-3-8\weka.jar" weka.Run weka.associations.HotSpot -t "D:\xampp\htdocs\autoit_projects\weka-association-rule-caller\vote.arff" -c last -V 4 -S 0.33 -M 2 -length -1 -I 0.01
