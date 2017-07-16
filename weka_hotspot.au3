@@ -5,30 +5,8 @@
 #include <AutoItConstants.au3>
 #include <puli_utils.au3>
 #include <WinAPI.au3>
+#include <utf16.au3>
 #pragma compile(Icon, 'weka-icon.ico')
-
-
-Local $hFileOpen = FileOpen("utf8.txt", $FO_READ)
-Local $sFileRead = FileRead($hFileOpen)
-$sFileRead = StringToASCIIArray($sFileRead )
-$sFileRead = _ArrayToString($sFileRead, "\x")
-;_ArrayDisplay($sFileRead)
-console_log($sFileRead)
-
-$hFileOpen = FileOpen("unicode.txt", 2)
-FileWrite($hFileOpen, $sFileRead)
-
-Local $hFileOpen = FileOpen("unicode.txt", $FO_READ)
-Local $sFileRead = FileRead($hFileOpen)
-$sFileRead = StringSplit($sFileRead, "\x", 3)
-$sFileRead = StringFromASCIIArray($sFileRead)
-console_log($sFileRead)
-
-$hFileOpen = FileOpen("utf8a.txt", 2)
-FileWrite($hFileOpen, $sFileRead)
-
-Exit
-
 
 ; -----------------------------
 ; 取得資料
@@ -57,6 +35,8 @@ Else
 EndIf
 
 $weka_command = "weka.associations.HotSpot"
+
+Local $sTempFile = _TempFile(@ScriptDir & "\tmp", "weak_hotspot_", ".csv")
 
 ; -----------------------------
 
@@ -103,6 +83,8 @@ Func weka_result_format_builder_tree($weka_result)
    If $weka_result = "" Then
 	  Return
    EndIf
+
+   ;console_log($weka_result)
 
    ; 找出需要的變數
    Local $lines = StringSplit($weka_result, @LF & " ", 1)
@@ -323,14 +305,32 @@ Func run_weka_command($filename, $minimize_target)
    Global $rule_target_array[0] = []
 
    ; 不處理.gitignore
-   $ext = stringRight($file_name, 9)
+   Local $ext = stringRight($file_name, 9)
    ;MsgBox(0, "weka_hotspot.au3", $ext)
    If $ext = "gitignore" Then
+	  Return
+   EndIf
+   $ext = stringRight($file_name, 4)
+   ;MsgBox(0, "weka_hotspot.au3", $ext)
+   If $ext = "csv#" Then
 	  Return
    EndIf
    ;MsgBox(0, "weka_hotspot.au3", $ext)
 
    Local $train_file = $train_set_dir & $file_name
+
+   ; 把檔案取出來，另外建一個編碼後的，然後再來處理
+   Local $hFileOpen = FileOpen($train_file, $FO_READ)
+   Local $sFileRead = FileRead($hFileOpen)
+   $sFileRead = string_encode_utf16($sFileRead )
+
+
+   $hFileOpen = FileOpen($sTempFile, 2)
+   FileWrite($sTempFile, $sFileRead)
+
+   $train_file = $sTempFile
+
+
    Local $full_result[0] = []
    ;console_log($train_file)
 
@@ -361,6 +361,7 @@ Func run_weka_command($filename, $minimize_target)
 		 ; FileWrite($result_output_dir & $file_name & $param & ".txt", $weka_result)
 		 ; $weka_result = _ConvertAnsiToUtf8($weka_result)
 		 $weka_result = trim($weka_result)
+		 $weka_result = string_decode_utf16($weka_result)
 
 		 If $weka_result = "" Then
 			ExitLoop
@@ -392,7 +393,7 @@ Func run_weka_command($filename, $minimize_target)
    $format_result = trim($format_result)
    $full_result = trim($full_result)
    Local $result = "<h1>Format Result</h1>" & @CRLF & $format_result & @CRLF & "<hr /> <h1>Original Result</h1>" & @CRLF & $full_result
-   $result = '<link rel=stylesheet type="text/css" href="../style.css">' & $result
+   $result = '<link rel=stylesheet type="text/css" href="style.css">' & $result
    FileOpen ($output_file, 2)
    FileWrite($output_file, $result)
 EndFunc
@@ -425,15 +426,18 @@ Local $all_format_result = ""
 For $f = 1 To $FileList[0]
 
    $file_name = $FileList[$f]
+
+
    run_weka_command($file_name, False)
    run_weka_command($file_name, True)
 
 Next
 
-$all_format_result = '<link rel=stylesheet type="text/css" href="../style.css">' & $all_format_result
+$all_format_result = '<link rel=stylesheet type="text/css" href="style.css">' & $all_format_result
 Local $output_file = $result_output_dir & "all_result.html"
 FileOpen ($output_file, 2)
 FileWrite($output_file, $all_format_result)
 
+FileDelete($sTempFile)
 
 ;MsgBox(0, "weka_hotspot.au3", "Finish")

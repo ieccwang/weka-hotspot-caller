@@ -1,4 +1,5 @@
 *.arff
 *.csv
+*.csv#
 !vote.arff
 !vote.csv
