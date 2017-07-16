@@ -1,0 +1,15 @@
+table { 
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+table, table td {
+	border-left-width: 0;
+	border-right-width: 0;
+}
+
+table td {
+	text-indent: -1em;
+	padding-left: 1.3em;
+	padding-right: 0.3em;
+}
