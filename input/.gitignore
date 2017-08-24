@@ -3,3 +3,5 @@
 *.csv#
 !vote.arff
 !vote.csv
+!score.csv
+tmp*
