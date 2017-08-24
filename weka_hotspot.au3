@@ -34,6 +34,20 @@ Else
    $hotspot_rhs_item_full = True
 EndIf
 
+$hotspot_analyze_min = IniRead ( @ScriptDir & "\config.ini", "weka", "hotspot_analyze_min", "true" )
+If $hotspot_analyze_min = "false" Then
+   $hotspot_analyze_min = False
+Else
+   $hotspot_analyze_min = True
+EndIf
+
+$hotspot_target_analyze_all = IniRead ( @ScriptDir & "\config.ini", "weka", "hotspot_target_analyze_all", "true" )
+If $hotspot_target_analyze_all = "false" Then
+   $hotspot_target_analyze_all = False
+Else
+   $hotspot_target_analyze_all = True
+EndIf
+
 $weka_command = "weka.associations.HotSpot"
 
 Local $sTempFile = _TempFile(@ScriptDir & "\tmp", "weak_hotspot_", ".csv")
@@ -43,9 +57,12 @@ Local $sTempFile = _TempFile(@ScriptDir & "\tmp", "weak_hotspot_", ".csv")
 Func weka_command_builder($train_file, $param, $minimize_target)
    $ext = stringRight($train_file, 4)
    Local $cmd_weka = @comspec & ' /C Java -Dfile.encoding=utf-8 -cp ' & $extapp_weka & ' weka.Run ' & $weka_command & ' -t "' & $train_file & '" -c ' & $hotspot_targetIndex & ' -V ' & $param & ' -S ' & $hotspot_support & ' -M ' & $hotspot_max_branching_factor & ' -length ' & $hotspot_max_rule_length & ' -I 0.01 '
+
    If $minimize_target = True Then
 	  $cmd_weka = $cmd_weka & " -L "
    EndIf
+
+   ;console_log($cmd_weka)
    Local $cmd_weka2 = $cmd_weka & " -R"
    ;If $ext = "csv" Then
 	  ; CSV的指令
@@ -109,6 +126,8 @@ Func weka_result_format_builder_tree($weka_result)
    For $i = 2 to $lines[0]
 	  Local $line = $lines[$i]
 	  Local $lhs = StringSplit($line, ' (', 1)
+	  ;Local $lhs = string_split($line, ' (')
+	  console_log($lhs);
 	  Local $item = trim($lhs[1])
 
 	  Local $last_item = string_split($item, "| ")
@@ -299,6 +318,9 @@ Func run_weka_command($filename, $minimize_target)
    Local $target_class = "max"
    If $minimize_target = True Then
 	  $target_class = "min"
+	  If $hotspot_analyze_min = False Then
+		 Return
+	  EndIf
    EndIf
 
    Global $target_array[0] = []
@@ -373,7 +395,7 @@ Func run_weka_command($filename, $minimize_target)
 	  ;console_log($weka_result)
 	  ;console_log($param)
 	  ;Sleep(1000)
-	  If $weka_result = "" Then
+	  If $weka_result = "" Or $hotspot_target_analyze_all = False Then
 		 ExitLoop
 	  EndIf
    WEnd
